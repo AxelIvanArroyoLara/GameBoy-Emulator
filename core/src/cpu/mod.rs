@@ -1,4 +1,5 @@
 use crate::utils::*;
+pub mod opcodes;
 
 pub struct Cpu {
     pc: u16,
