@@ -121,6 +121,28 @@ impl Cpu {
 
         self.f &= 0xF0;
     }
+
+    pub fn fetch(&mut self) -> u8{
+        let val: u8 = self.read_ram(self.pc);
+        self.pc += 1;
+        val
+    }
+
+    pub fn fetch_u16(&mut self) -> u16{
+        let low = self.fetch();
+        let high = self.fetch();
+        let val = merge_bytes(high, low);
+        val
+    }
+
+    pub fn read_ram(&self, addr:u16) -> u8{
+        todo!()
+    }
+
+    pub fn write_ram(mut self, addr:u16, val: u8){
+        todo!()
+    }
+
 }
 
 #[derive(Copy, Clone)]
