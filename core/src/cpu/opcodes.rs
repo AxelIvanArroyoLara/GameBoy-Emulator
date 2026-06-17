@@ -30,3 +30,8 @@ pub fn execute(cpu: &mut Cpu) -> u8 {
     let op_index = cpu.fetch();
     OPCODES[op_index as usize](cpu)
 }
+
+fn nop_00(_cpu: &mut Cpu) -> u8{
+    // Do fucking nothing
+    1
+}
