@@ -40,6 +40,10 @@ impl Cpu {
             Regs::F => self.f,
             Regs::H => self.h,
             Regs::L => self.l,
+            Regs::HL => {
+                let addr = self.get_r16(Regs16::HL);
+                self.read_ram(addr)
+            }
         }
     }
 
@@ -53,6 +57,10 @@ impl Cpu {
             Regs::F => self.f = val & 0xF0,
             Regs::H => self.h = val,
             Regs::L => self.l = val,
+            Regs::HL => {
+                let addr = self.get_r16(Regs16::HL);
+                self.write_ram(addr, val);
+            }
         }
     }
 
@@ -139,8 +147,42 @@ impl Cpu {
         todo!()
     }
 
-    pub fn write_ram(mut self, addr:u16, val: u8){
+    pub fn write_ram(&mut self, addr:u16, val: u8){
         todo!()
+    }
+
+    pub fn inc_r16(&mut self, r:Regs16){
+        let val = self.get_r16(r);
+        let inc = val.wrapping_add(1);
+        self.set_r16(r, inc);
+    }
+
+    pub fn dec_r16(&mut self, r: Regs16){
+        let val = self.get_r16(r);
+        let dec = val.wrapping_sub(1);
+        self.set_r16(r, dec);
+    }
+
+    pub fn dec_r8(&mut self, r:Regs) {
+        let val = self.get_r8(r);
+        let dec = val.wrapping_sub(1);
+        let set_h = check_h_borrow_u8(val, 1);
+
+        self.set_r8(r, dec);
+        self.set_flag(Flags::N, true);
+        self.set_flag(Flags::Z, dec == 0);
+        self.set_flag(Flags::H, set_h);
+    }
+
+    pub fn inc_r8(&mut self, r: Regs) {
+        let val = self.get_r8(r);
+        let inc = val.wrapping_add(1);
+        let set_h = check_h_carry_u8(val, 1);
+
+        self.set_r8(r, inc);
+        self.set_flag(Flags::N, false);
+        self.set_flag(Flags::Z, inc == 0);
+        self.set_flag(Flags::H, set_h);
     }
 
 }
@@ -155,6 +197,7 @@ pub enum Regs {
     F,
     H,
     L,
+    HL,
 }
 
 #[derive(Copy, Clone)]
